@@ -1,0 +1,115 @@
+<div class="container">
+
+    <div rtl>
+
+        <h1 *ngIf="!(followPatientsList$ | async).length && !(followOrdersList$ | async).length"
+            class="main-heading">{{ 'stms.follow-list.empty' | translate }}</h1>
+
+        <h1 *ngIf="(followPatientsList$ | async).length"
+            class="main-heading">{{ 'stms.follow-list.patients' | translate }}</h1>
+
+        <form *ngIf="(followPatientsList$ | async).length">
+            <mat-form-field>
+                <mat-label>{{ 'stms.patients.title' | translate }}</mat-label>
+                <input [autocomplete]="false" type="text" matInput [formControl]="searchControlPatients" [placeholder]="'stms.search.patients' | translate">
+            </mat-form-field>
+        </form>
+
+        <div class="actions">
+
+            <ng-container *ngIf="(followPatientsList$ | async).length">
+
+                <ng-container *ngIf="((followPatientsList$ | async) | search : searchControlPatients.value).length; else emptyPatientsBlock">
+
+                    <mat-card *ngFor="let patient of (followPatientsList$ | async) | search : searchControlPatients.value" class="patient-card">
+                        <div class="patient-card-header">
+                            <mat-card-header>
+                                <img mat-card-avatar src="assets/unknown_person.png">
+                                <mat-card-title>{{ patient.firstName }}</mat-card-title>
+                                <mat-card-subtitle>{{ patient.lastName }}</mat-card-subtitle>
+                            </mat-card-header>
+
+                            <mat-icon color="accent">
+                                <fa-icon icon="check"></fa-icon>
+                            </mat-icon>
+                        </div>
+
+                        <mat-card-actions>
+                            <button mat-raised-button color="warn" (click)="removeFromFollowPatientList(patient.code)">
+                                {{ 'stms.follow-list.remove' | translate | uppercase }}
+                            </button>
+                        </mat-card-actions>
+                    </mat-card>
+
+                </ng-container>
+
+                <ng-template #emptyPatientsBlock>
+                    <a mat-raised-button class="actions-main" color="warn" (click)="clearPatientsInput()">
+                        {{ 'stms.search.clear-input' | translate }}
+                    </a>
+                </ng-template>
+
+            </ng-container>
+
+            <div rtl>
+                <h1 *ngIf="(followOrdersList$ | async).length"
+                    class="main-heading">{{ 'stms.follow-list.orders' | translate }}
+                </h1>
+
+                <form *ngIf="(followOrdersList$ | async).length">
+                    <mat-form-field>
+                        <mat-label>{{ 'stms.orders.title' | translate }}</mat-label>
+                        <input [autocomplete]="false" type="text" matInput [formControl]="searchControlOrders" [placeholder]="'stms.search.orders' | translate">
+                    </mat-form-field>
+                </form>
+
+                <div class="actions">
+
+                    <ng-container *ngIf="(followOrdersList$ | async).length">
+
+                        <ng-container *ngIf="((followOrdersList$ | async) | search : searchControlOrders.value).length; else emptyOrdersBlock">
+
+                            <mat-card
+                                    *ngFor="let order of (followOrdersList$ | async) | search : searchControlOrders.value"
+                                    class="order-item">
+
+                                <div class="order-header">
+                                    <div>
+                    <span>
+                        {{ 'stms.orders.order' | translate }}
+                    </span>
+
+                                        <span class="order-item-name">
+                        {{ order.orderName }}
+                    </span>
+                                    </div>
+
+                                    <mat-icon color="accent">
+                                        <fa-icon icon="check"></fa-icon>
+                                    </mat-icon>
+                                </div>
+
+                                <mat-card-actions>
+                                    <button mat-raised-button color="warn"
+                                            (click)="removeFromFollowOrderList(order.orderNum)">
+                                        {{ 'stms.follow-list.remove' | translate | uppercase }}
+                                    </button>
+                                </mat-card-actions>
+                            </mat-card>
+
+                        </ng-container>
+
+                        <ng-template #emptyOrdersBlock>
+                            <a mat-raised-button class="actions-main" color="warn" (click)="clearPatientsInput()">
+                                {{ 'stms.search.clear-input' | translate }}
+                            </a>
+                        </ng-template>
+
+                    </ng-container>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

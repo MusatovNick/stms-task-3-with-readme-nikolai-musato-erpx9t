@@ -1,0 +1,70 @@
+<div class="container">
+  <div rtl>
+    <h1 class="main-heading">{{ 'stms.patients.title' | translate }}</h1>
+
+      <form *ngIf="(patientsInfo$ | async)">
+          <mat-form-field>
+              <mat-label>{{ 'stms.patients.title' | translate }}</mat-label>
+              <input [autocomplete]="false" type="text" matInput [formControl]="searchControl" [placeholder]="'stms.search.orders' | translate">
+          </mat-form-field>
+      </form>
+
+    <div class="actions">
+      <a *ngIf="!(patientsInfo$ | async)" mat-raised-button class="actions-main" color="primary" (click)="getPatients()">
+        {{ 'stms.patients.get-patients' | translate }}
+      </a>
+
+        <ng-container *ngIf="patientsInfo$ | async">
+
+            <ng-container *ngIf="((patients$ | async) | search : searchControl.value).length; else emptyBlock">
+
+                <mat-card *ngFor="let patient of (patients$ | async) | search : searchControl.value" class="patient-card">
+                    <div class="patient-card-header">
+                        <mat-card-header>
+                            <img mat-card-avatar src="assets/unknown_person.png">
+                            <mat-card-title>{{ patient.firstName }}</mat-card-title>
+                            <mat-card-subtitle>{{ patient.lastName }}</mat-card-subtitle>
+                        </mat-card-header>
+
+                        <mat-icon
+                                *ngIf="(followPatientsList$ | async).includes(patient.code)"
+                                color="accent">
+
+                            <fa-icon icon="check"></fa-icon>
+                        </mat-icon>
+                    </div>
+
+                    <mat-card-actions>
+                        <button
+                                mat-raised-button
+                                color="primary"
+                                [disabled]="(followPatientsList$ | async).includes(patient.code)"
+                                (click)="addToFollowPatientList(patient)">
+                            {{ 'stms.follow-list.add' | translate | uppercase }}
+                        </button>
+
+                        <button
+                                mat-raised-button
+                                class="patients-remove"
+                                [disabled]="!(followPatientsList$ | async).includes(patient.code)"
+                                [color]="(followPatientsList$ | async).includes(patient.code) ? 'warn' : 'primary'"
+                                (click)="removeFromFollowPatientList(patient.code)">
+
+                            {{ 'stms.follow-list.remove' | translate | uppercase }}
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+
+            </ng-container>
+
+        </ng-container>
+
+
+        <ng-template #emptyBlock>
+            <a mat-raised-button class="actions-main" color="warn" (click)="clearInput()">
+                {{ 'stms.search.clear-input' | translate }}
+            </a>
+        </ng-template>
+    </div>
+  </div>
+</div>
